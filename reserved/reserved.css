@@ -1,0 +1,31 @@
+body {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                background-color: #22303b;
+                color: #333;
+                height: 100vh;
+                overflow: hidden; /* keep container inside viewport */
+            }
+            .container {
+                background-color: #cde2ec;
+                padding: 50px 30px;
+                border-radius: 10px;
+                box-shadow: 0 15px 20px rgba(20, 26, 37, 0.927);
+                position: absolute;
+                cursor: grab;
+            }
+            h1 {
+                font-size: 2.5rem;
+                margin-bottom: 20px;
+                color: #2e5294e8;
+                text-align: center;
+            }
+            p {
+                font-size: 1.2rem;
+                color: #31518df5;
+                text-align: center;
+            }
+            sub {
+                color: #2e55b8f1;
+            }

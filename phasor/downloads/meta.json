@@ -1,0 +1,17 @@
+{
+    "win32": { "label": "Windows (64 bit, SSE2)", "type": "Executable, Windows" },
+    "winarm": { "label": "Windows (ARM64)", "type": "Executable, Windows" },
+    "win32+": { "label": "Windows (64 bit, AVX2)", "type": "Executable, Windows" },
+    "darwin": { "label": "macOS (Intel 64 bit)", "type": "Installer, macOS" },
+    "darwinarm": { "label": "macOS (Apple Silicon)", "type": "Installer, macOS" },
+    "linux": { "label": "Linux (amd64, SSE2)", "type": "AppImage" },
+    "linuxarm": { "label": "Linux (aarch64)", "type": "AppImage" },
+    "linux+": { "label": "Linux (amd64, AVX2)", "type": "AppImage" },
+    "bsd": { "label": "BSD (amd64, SSE2)", "type": "gzip archive" },
+    "bsdarm": { "label": "BSD (aarch64)", "type": "gzip archive" },
+    "bsd+": { "label": "BSD (amd64, AVX2)", "type": "gzip archive" },
+    "docker": { "label": "Docker", "type": "gzip archive" },
+    "dockerzip": { "label": "Docker", "type": "zip archive" },
+    "vscode": { "label": "VSCode Extension", "type": "'VSIX' zip archive" },
+    "vs": { "label": "VS Extension", "type": "'VSIX' zip archive" }
+}

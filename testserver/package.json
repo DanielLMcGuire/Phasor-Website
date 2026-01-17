@@ -1,0 +1,12 @@
+{
+    "type": "module",
+    "scripts": {
+        "build": "tsc && terser dist/server.mjs -o dist/server.min.mjs -c",
+        "start": "node dist/server.min.js",
+        "dev": "node --watch src/server.min.ts"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0",
+        "@types/node": "^25.0.0"
+    }
+}

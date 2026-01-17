@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "module": "nodenext",
+        "baseUrl": ".",
+        "target": "es2022",
+        "paths": {
+        "/scripts/*.min.js": ["src/*.ts"],
+        "/scripts/*.min.mjs": ["src/*.mts"]
+        },
+        "outDir": "scripts",
+        "moduleResolution": "nodenext"
+    }
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Phasor Language</title>
+        <meta name="description" content="A new, fast, dynamically typed, bytecode compiled programming language.">
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+        <script type="module" src="/scripts/phasor-page.min.js"></script>
+        <link rel="manifest" href="/assets/site.webmanifest">
+        <link rel="stylesheet" href="/themes/phasor.min.css">
+        <link rel="stylesheet" href="/themes/prism.css">
+        <script src="/scripts/phasor-theme.min.js" defer></script>
+        <script type="module">import{loadMD as l}from"/scripts/phasor-loader.min.mjs";l("/content/frontend.md","#home_md");</script>
+    </head>
+    <body>
+        <div id="header"></div>
+
+        <main>
+            <section id="home" class="md-section">
+            <div style="text-align: center;">
+                <h1>Phasor <img id="logo" src="/assets/logo.svg" width="320" height="160" fetchpriority="high" alt="Phasor Logo (Hand-drawn sinewave)"> Language</h1>
+                <p>A dynamically typed, compiled programming language with a hybrid stack/register-based bytecode virtual machine, <em>designed</em> for performance and flexibility.</p>
+            </div>
+            <script src="/scripts/easter-egg.min.js"></script>
+            <section id="home_md"></section>
+            </section>
+        </main>
+        <div id="footer"></div>
+    </body>
+</html>
