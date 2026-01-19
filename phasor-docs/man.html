@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Man Page Viewer | Phasor</title>
+<title>man | Phasor</title>
 <style>
   html, body {
     margin: 0;
@@ -21,40 +21,6 @@
 <body>
 <iframe id="pdf-frame"></iframe>
 
-<script>
-(function() {
-  const params = new URLSearchParams(window.location.search);
-  const file = params.get('f');
-
-  const iframe = document.getElementById('pdf-frame');
-
-  if (!file) {
-    iframe.src = '/404.html';
-    return;
-  }
-
-  const match = file.match(/\.(\d+)$/);
-  if (!match) {
-    iframe.src = '/404.html';
-    return;
-  }
-
-  const ext = match[1];
-  const pdfUrl = `/man${ext}/${file}.pdf`;
-  document.title = `man ${file} | Phasor`;
-
-  fetch(pdfUrl, { method: 'HEAD' })
-    .then(response => {
-      if (response.ok) {
-        iframe.src = pdfUrl;
-      } else {
-        iframe.src = '/404.html';
-      }
-    })
-    .catch(() => {
-      iframe.src = '/404.html';
-    });
-})();
-</script>
+<script src="/dist/man.js"></script>
 </body>
 </html>
