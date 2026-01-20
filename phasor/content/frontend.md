@@ -88,13 +88,13 @@ putf("%d! = %d\n", num, result);
 
 #### Applications
 
-- **REPL** (`phasorrepl`) - Interactive interpreter
-- **Bytecode Compiler** (`phasorcompiler`) - Script to bytecode compiler
-- **Native Compiler** (`phasornative`) - Script to C++ transpiler
-- **VM Runtime** (`phasorvm`) - Bytecode execution engine
-- **JIT Runtime** (`phasorjit`) - Direct script execution
-- **Shell** (`shell`) - Phasor-based command shell
-- **Core Utils** (`cat-phs`, `cp-phs`, `echo-phs`, `ls-phs`, `mv-phs`, `rm-phs`, `touch-phs`) - Unix-like utilities
+- **REPL** ([`phasorrepl`](https://phasor-docs.pages.dev/man?f=phasorrepl.1)) - Interactive interpreter
+- **Bytecode Compiler** ([`phasorcompiler`](https://phasor-docs.pages.dev/man?f=phasorcompiler.1)) - Script to bytecode compiler
+- **Native Compiler** ([`phasornative`](https://phasor-docs.pages.dev/man?f=phasornative.1)) - Script to C++ transpiler
+- **VM Runtime** ([`phasorvm`](https://phasor-docs.pages.dev/man?f=phasorvm.1)) - Bytecode execution engine
+- **JIT Runtime** ([`phasorjit`](https://phasor-docs.pages.dev/man?f=phasorjit.1)) - Direct script execution
+- **Shell** (`shell`) - Phasor-based command shell **PREVIEW**
+- **Core Utils** (`cat-phs`, `cp-phs`, `echo-phs`, `ls-phs`, `mv-phs`, `rm-phs`, `touch-phs`) - Unix-like utilities **PREVIEW**
 
 ### Standard Library Modules
 
