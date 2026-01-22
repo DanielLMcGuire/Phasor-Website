@@ -13,17 +13,17 @@ Phasor is still in beta, as I wish for a **smooth, stable experience** for the f
 
 ## Q/A
 
-> **Q** - Are you just ripping off the best from every language?
+> **Q** - Where did the idea come from?
 >
-> **A** - My inspiration came from a few places, TS, C99, Zig, Rust, etc 
+> **A** - My inspiration came from a few places, TS, C99, Zig, Rust, etc. I was bored.
 >
 > **Q** - What is this? Why would I even need this?
 >
-> **A** - Not sure.
+> **A** - You don't, but it could become useful as it evolves.
 >
 > **Q** - Is this better than 'Java' or '.NET'?
 >
-> **A** - I have not tested Phasor against other languages, runtimes, VMs, etc.
+> **A** - I have not tested Phasor against other languages, runtimes, VMs, or even native programs. My intention is a working stable language, not competition
 
 ## Start with phasor
 
@@ -105,7 +105,7 @@ putf("%d! = %d\n", num, result);
 
 This project is licensed under the following agreements, which may be updated at any time, with or without notice, upon a new non-patch release of the language.
 
-<sub>Note: These versions might appear older depending on the last update to the readme</sub>
+<sub>Note: These versions might appear older than they actually are depending on the last update to the readme.</sub>
 
 - Phasor Language / VM / Toolchain | [Phasor Restrictive License 1.3](/document.html?file=content%2Flegal%2Fphasorprl.txt&name=Phasor%20Restrictive%20License%201.3)
 - Phasor Standard Library | [Phasor Open License 1.0](/document.html?file=content%2Flegal%2Fphasorpol.txt&name=Phasor%20Open%20License%201.0)
