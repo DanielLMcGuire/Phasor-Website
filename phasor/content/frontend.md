@@ -1,13 +1,12 @@
 
 ## Language Features
 
-- **Dynamic typing** with integers, floats, strings, booleans, and of the least for last: null. ```var x = 21; // int```
+- **Dynamic typing** with integers, floats (IEEE 754, double-percision), strings, booleans, and null. ```var x = 21; // int```
 - **Functions** with forced type annotations ```fn func(input: string) -> void { ... }```
 - **Structs** with C style static field access, mostly untested. ```struct.member = 14;```
 - **Arrays** are being tested with C syntax ```var arrayName[arraySize];```
 - **C-style Control flow**: if/else, while, for, switch/case, break/continue
-- **Comprehensive standard library**: without anything smart to put here for appeal
-- **Hybrid VM** supporting both stack-based and primarily register-based execution
+- **Comprehensive standard library**
 
 Phasor is still in beta, as I wish for a **smooth, stable experience** for the final language. The existing implementation is stable (as far as I know) but it needs some work.
 
