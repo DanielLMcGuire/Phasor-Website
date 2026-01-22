@@ -1,25 +1,21 @@
 
 ## Language Features
 
-- **Dynamic typing** with integers, floats, strings, booleans, and of the least for last: null.
-- **Functions** with optional type annotations
-- **Structs** with static field access, with the benefit of being mostly untested!
-- **Control flow**: if/else, while, for, switch/case, break/continue
+- **Dynamic typing** with integers, floats, strings, booleans, and of the least for last: null. ```var x = 21; // int```
+- **Functions** with forced type annotations ```fn func(input: string) -> void { ... }```
+- **Structs** with C style static field access, mostly untested. ```struct.member = 14;```
+- **Arrays** are being tested with C syntax ```var arrayName[arraySize];```
+- **C-style Control flow**: if/else, while, for, switch/case, break/continue
 - **Comprehensive standard library**: without anything smart to put here for appeal
 - **Hybrid VM** supporting both stack-based and primarily register-based execution
 
-Phasor is still in beta, as I wish for a **smooth, stable experience** for the final language. The existing implementation needs a ton of work.
-
-### Upcoming
-
-- Proposal based standard library updates (**Needs planning!**)
-- Custom unix style environment for system level work (**Started**)
+Phasor is still in beta, as I wish for a **smooth, stable experience** for the final language. The existing implementation is stable (as far as I know) but it needs some work.
 
 ## Q/A
 
-> **Q** - Why does the code look horrible?
+> **Q** - Are you just ripping off the best from every language?
 >
-> **A** - I let an AI agent go loose to *find* (not fix) issues, and it fixed almost 200K tokens worth of "issues" that weren't there.
+> **A** - My inspiration came from a few places, TS, C99, Zig, Rust, etc 
 >
 > **Q** - What is this? Why would I even need this?
 >
@@ -28,20 +24,8 @@ Phasor is still in beta, as I wish for a **smooth, stable experience** for the f
 > **Q** - Is this better than 'Java' or '.NET'?
 >
 > **A** - I have not tested Phasor against other languages, runtimes, VMs, etc.
->
-> **Q** - This feels too much like 'JavaScript', is this intentional?
->
-> **A** - No, in fact my goal was the opposite. I would have been better at that goal had I actually known JS when I wrote this. Instead I was forced to learn JS to make the website afterwards and noticed.
->
-> **Q** - How to declare a constant?
->
-> **A** - Everything is technically a constant, a variable is an technically in some way an extension of said constant. (TL;DR They are automatic)
->
-> **Q** - How can I learn more?
->
-> **A** - The following *might* be helpful:
 
-## Quick Start
+## Start with phasor
 
 ```bash
 # Open phasor shell (optional)
@@ -68,7 +52,7 @@ cp src/App/Runtime/NativeRuntime_[static,dynamic]_main.cpp main.cpp
 phasornative -c, --compiler clang++ -l, --linker lld -s, --source main.cpp input.phs -o, --output output
 ````
 
-### Example Program
+### Write a program
 
 ```javascript
 include_stdio();
@@ -86,7 +70,7 @@ var result = factorial(num);
 putf("%d! = %d\n", num, result);
 ```
 
-#### Applications
+#### The new ecosystem
 
 - **REPL** ([`phasorrepl`](https://phasor-docs.pages.dev/man?f=phasorrepl.1)) - Interactive interpreter
 - **Bytecode Compiler** ([`phasorcompiler`](https://phasor-docs.pages.dev/man?f=phasorcompiler.1)) - Script to bytecode compiler
@@ -96,7 +80,7 @@ putf("%d! = %d\n", num, result);
 - **Shell** (`shell`) - Phasor-based command shell **PREVIEW**
 - **Core Utils** (`cat-phs`, `cp-phs`, `echo-phs`, `ls-phs`, `mv-phs`, `rm-phs`, `touch-phs`) - Unix-like utilities **PREVIEW**
 
-### Standard Library Modules
+### Phasor's (tiny) standard library
 
 | Module      | Include Statement    | Functions                                                             |
 | ----------- | -------------------- | --------------------------------------------------------------------- |
@@ -108,7 +92,7 @@ putf("%d! = %d\n", num, result);
 | **Types**   | `include_stdtype()`  | `to_int`, `to_float`, `to_string`, `to_bool`                          |
 | **Regex**   | `include_stdregex()` | `regex_match`, `regex_search`, `regex_replace`                        |
 
-## Documentation
+## Docs
 
 - **[Language Guide](/document.html?file=https%3A%2F%2Fphasor-docs.pages.dev%2Fcontent%2Fguide_phasor_language.md&name=Language%20Guide)** - Complete syntax and language features
 - **[Standard Library Guide](/document.html?file=https%3A%2F%2Fphasor-docs.pages.dev%2Fcontent%2Fguide_stdlib.md&name=Standard%20Library%20Guide)** - Comprehensive function reference guide
@@ -117,9 +101,11 @@ putf("%d! = %d\n", num, result);
 
 ---
 
-**Phasor** - Fast, flexible programming/scripting with *near* native VM performance.
+**Phasor** - A fast Language, Standard Library, Toolchain, VM, and ISA.
 
 This project is licensed under the following agreements, which may be updated at any time, with or without notice, upon a new non-patch release of the language.
+
+<sub>Note: These versions might appear older depending on the last update to the readme</sub>
 
 - Phasor Language / VM / Toolchain | [Phasor Restrictive License 1.3](/document.html?file=content%2Flegal%2Fphasorprl.txt&name=Phasor%20Restrictive%20License%201.3)
 - Phasor Standard Library | [Phasor Open License 1.0](/document.html?file=content%2Flegal%2Fphasorpol.txt&name=Phasor%20Open%20License%201.0)
