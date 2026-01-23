@@ -1,0 +1,19 @@
+/*.vsix
+  Content-Type: application/zip
+  Content-Disposition: attachment
+
+/*.1
+  Content-Type: text/plain; charset=utf-8
+  Content-Disposition: inline
+
+/*.3
+  Content-Type: text/plain; charset=utf-8
+  Content-Disposition: inline
+  
+/*.5
+  Content-Type: text/plain; charset=utf-8
+  Content-Disposition: inline
+  
+/*.7
+  Content-Type: text/plain; charset=utf-8
+  Content-Disposition: inline
