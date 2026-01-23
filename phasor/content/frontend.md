@@ -7,6 +7,12 @@
 - **Arrays** are being tested with C syntax ```var arrayName[arraySize];```
 - **C-style Control flow**: if/else, while, for, switch/case, break/continue
 - **Comprehensive standard library**
+- **Windows API Bindings**
+
+## Upcoming
+
+- C based standard library replacing remaining C++ parts (**Started**)
+- **POSIX API Bindings**
 
 Phasor is still in beta, as I wish for a **smooth, stable experience** for the final language. The existing implementation is stable (as far as I know) but it needs some work.
 
