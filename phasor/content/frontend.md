@@ -1,18 +1,19 @@
-
 ## Language Features
 
 - **Dynamic typing** with integers, floats (IEEE 754, double-percision), strings, booleans, and null. ```var x = 21; // int```
 - **Functions** with forced type annotations ```fn func(input: string) -> void { ... }```
-- **Structs** with C style static field access, mostly untested. ```struct.member = 14;```
-- **Arrays** are being tested with C syntax ```var arrayName[arraySize];```
 - **C-style Control flow**: if/else, while, for, switch/case, break/continue
 - **Comprehensive standard library**
 - **Windows API Bindings**
 
-## Upcoming
+## Upcoming (Some may appear to work before actual implementation)
 
+- **Structs** with C style static field access, mostly untested. ```struct.member = 14;```
+- **Arrays** are being tested with C syntax ```var arrayName[arraySize];``` 
 - C based standard library replacing remaining C++ parts (**Started**)
 - **POSIX API Bindings**
+
+---
 
 Phasor is still in beta, as I wish for a **smooth, stable experience** for the final language. The existing implementation is stable (as far as I know) but it needs some work.
 
@@ -110,12 +111,9 @@ putf("%d! = %d\n", num, result);
 
 This project is licensed under the following agreements, which may be updated at any time, with or without notice, upon a new non-patch release of the language.
 
-<sub>Note: These versions might appear older than they actually are depending on the last update to the readme.</sub>
-
-- Phasor Language / VM / Toolchain | [Phasor Restrictive License 1.3](/document.html?file=content%2Flegal%2Fphasorprl.txt&name=Phasor%20Restrictive%20License%201.3)
-- Phasor Standard Library | [Phasor Open License 1.0](/document.html?file=content%2Flegal%2Fphasorpol.txt&name=Phasor%20Open%20License%201.0)
+- Phasor Language / ISA / VM / Toolchain / Standard Library | [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)
 - Phasor Shell | [MIT License](https://opensource.org/license/mit)
 - Phasor coreutils implementation | [GNU General Public License 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
-- Phasor binary releases | [Phasor Binary EULA](/document.html?file=content%2Flegal%2Fphasorbineula.txt&name=Phasor%20Binary%20EULA)
+- Phasor binary releases | [Phasor Binary EULA](https://phasor.pages.dev/document?file=content%2Flegal%2Fphasorbineula.txt&name=Phasor%20Binary%20EULA)
 
 Mentions of 'coreutils', the Free Software Foundation, Inc., 'Java™', Oracle® Corporation, '.NET™', Microsoft® Corporation, Google® LLC, or other third-party companies, products, or trademarks do not imply any affiliation, endorsement, or sponsorship by those third parties, or thier affiliates, unless explicitly stated otherwise.
