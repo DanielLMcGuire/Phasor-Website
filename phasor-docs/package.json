@@ -2,10 +2,10 @@
   "name": "phasor-man",
   "version": "1.0.0",
   "description": "A simple PDF viewer that loads MAN pages into an iframe based on URL parameters",
-  "main": "scripts/man.js",
+  "main": "scripts/man.min.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npx terser scripts/man.js --compress --mangle --source-map \"content=scripts/man.js.map,url=man.min.js.map\" -o scripts/man.min.js",
     "watch": "tsc --watch"
   },
   "keywords": [
@@ -17,6 +17,7 @@
   "author": "Daniel McGuire",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+	"terser": "^5.40.0"
   }
 }
