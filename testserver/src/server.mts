@@ -6,8 +6,8 @@ import zlib from 'zlib';
 import mimeTypes from '../server-mimetypes.json' with { type: 'json' };
 
 type CachedFile =
-    | { buffer: Buffer; contentType: string }
-    | { path: string; contentType: string };
+    | { buffer: Buffer; contentType: string; cachedAt: number }
+    | { path: string; contentType: string; cachedAt: number };
 
 const portArg = process.argv[2];
 const port: number | undefined = portArg ? parseInt(portArg, 10) : undefined;
@@ -20,9 +20,12 @@ const devTools =
     process.argv.includes('--chrome');
 
 const MAX_CACHE_SIZE = 8112 * 1024; // ~8MB
+const CACHE_TTL_MS = 20_000; // 20 seconds
 const fileCache = new Map<string, CachedFile>();
 
 let devToolsMsg = logging;
+
+let forcedExit = false;
 
 if (help) printHelp(0);
 
@@ -44,24 +47,28 @@ function getFilePath(url?: string): string {
     return path.join(process.cwd(), pathname);
 }
 
+function logCacheUsage(action: string, filepath: string) {
+    let used = 0;
+    for (const v of fileCache.values()) {
+        if ('buffer' in v) used += v.buffer.length;
+    }
+    const percent = ((used / MAX_CACHE_SIZE) * 100).toFixed(1);
+    console.log(`Server: ${action} ${path.relative(process.cwd(), filepath)}`);
+    console.log(
+        `Server: Cache ${(used / 1000).toFixed(1)}KB/${(MAX_CACHE_SIZE / 1000).toFixed(1)}KB, ${percent}%`
+    );
+}
+
 async function getFile(filepath: string): Promise<CachedFile | null> {
-    if (fileCache.has(filepath)) {
-        if (logging) {
-            let used = 0;
-            for (const v of fileCache.values()) {
-                if ('buffer' in v) used += v.buffer.length;
-            }
+    const cached = fileCache.get(filepath);
 
-            const percent = ((used / MAX_CACHE_SIZE) * 100).toFixed(1);
-            console.log(`Server: Cache hit ${path.relative(process.cwd(), filepath)}`);
-            console.log(
-                `Server: Cache ${(used / 1000).toFixed(1)}KB/${(MAX_CACHE_SIZE / 1000).toFixed(
-                    1
-                )}KB, ${percent}%`
-            );
+    if (cached) {
+        if (Date.now() - cached.cachedAt < CACHE_TTL_MS) {
+            if (logging) logCacheUsage('Cache hit', filepath);
+            return cached;
         }
-
-        return fileCache.get(filepath)!;
+        fileCache.delete(filepath);
+        if (logging) console.log(`Server: Cache expired ${path.relative(process.cwd(), filepath)}`);
     }
 
     try {
@@ -73,28 +80,13 @@ async function getFile(filepath: string): Promise<CachedFile | null> {
 
         if (stats.size <= MAX_CACHE_SIZE) {
             const buffer = await fs.promises.readFile(filepath);
-            const data: CachedFile = { buffer, contentType };
+            const data: CachedFile = { buffer, contentType, cachedAt: Date.now() };
             fileCache.set(filepath, data);
-
-            if (logging) {
-                let used = 0;
-                for (const v of fileCache.values()) {
-                    if ('buffer' in v) used += v.buffer.length;
-                }
-
-                const percent = ((used / MAX_CACHE_SIZE) * 100).toFixed(1);
-                console.log(`Server: Added ${path.relative(process.cwd(), filepath)} to cache`);
-                console.log(
-                    `Server: Cache ${(used / 1000).toFixed(1)}KB/${(MAX_CACHE_SIZE / 1000).toFixed(
-                        1
-                    )}KB, ${percent}%`
-                );
-            }
-
+            if (logging) logCacheUsage('Added', filepath);
             return data;
         }
 
-        return { path: filepath, contentType };
+        return { path: filepath, contentType, cachedAt: Date.now() };
     } catch {
         return null;
     }
@@ -151,8 +143,11 @@ const server = http.createServer(async (req: IncomingMessage, res: ServerRespons
 
     if (!fileData) {
         res.statusCode = 404;
-        res.end('File not found');
+        res.end('404, Not Found');
+        if (logging) console.log(`Server: 404 ${req.url}`);
         return;
+    } else {
+        if (logging) console.log(`Server: Serving ${path.relative(process.cwd(), filepath)}`);
     }
 
     const ext = path.extname(filepath);
@@ -162,11 +157,17 @@ const server = http.createServer(async (req: IncomingMessage, res: ServerRespons
 
     if ('buffer' in fileData) {
         if (shouldCompress(ext)) {
-            if (logging) console.time(`Server: Compressing ${path.relative(process.cwd(), filepath)}`);
             headers['Content-Encoding'] = 'gzip';
             res.writeHead(200, headers);
+
             const gzip = zlib.createGzip();
-            if (logging) console.timeEnd(`Server: Compressing ${path.relative(process.cwd(), filepath)}`);
+            const compressStart = logging ? process.hrtime.bigint() : undefined;
+            gzip.on('finish', () => {
+                if (logging && compressStart) {
+                    const ms = Number(process.hrtime.bigint() - compressStart) / 1e6;
+                    console.log(`Server: Compressed ${path.relative(process.cwd(), filepath)} in ${ms.toFixed(3)}ms`);
+                }
+            });
             gzip.pipe(res);
             gzip.end(fileData.buffer);
         } else {
@@ -174,27 +175,38 @@ const server = http.createServer(async (req: IncomingMessage, res: ServerRespons
             res.end(fileData.buffer);
         }
     } else {
-        let stream: fs.ReadStream | zlib.Gzip;
-
         if (shouldCompress(ext)) {
-            if (logging)
-                console.time(`Server: Compressing ${path.relative(process.cwd(), fileData.path)}`);
             headers['Content-Encoding'] = 'gzip';
             res.writeHead(200, headers);
-            stream = fs.createReadStream(fileData.path).pipe(zlib.createGzip());
-            if (logging)
-                console.timeEnd(`Server: Compressing ${path.relative(process.cwd(), fileData.path)}`);
+
+            const compressStart = logging ? process.hrtime.bigint() : undefined;
+            const gzip = zlib.createGzip();
+            gzip.on('finish', () => {
+                if (logging && compressStart) {
+                    const ms = Number(process.hrtime.bigint() - compressStart) / 1e6;
+                    console.log(`Server: Compressed ${path.relative(process.cwd(), fileData.path)} in ${ms.toFixed(3)}ms`);
+                }
+            });
+            gzip.on('error', () => {
+                res.statusCode = 500;
+                res.end('Internal Server Error');
+            });
+
+            const fileStream = fs.createReadStream(fileData.path);
+            fileStream.on('error', () => {
+                res.statusCode = 500;
+                res.end('Internal Server Error');
+            });
+            fileStream.pipe(gzip).pipe(res);
         } else {
             res.writeHead(200, headers);
-            stream = fs.createReadStream(fileData.path);
+            const fileStream = fs.createReadStream(fileData.path);
+            fileStream.on('error', () => {
+                res.statusCode = 500;
+                res.end('Internal Server Error');
+            });
+            fileStream.pipe(res);
         }
-
-        stream.on('error', () => {
-            res.statusCode = 500;
-            res.end('Internal Server Error');
-        });
-
-        if (!shouldCompress(ext)) stream.pipe(res);
     }
 
     res.on('finish', () => {
@@ -210,4 +222,36 @@ server.listen(port, () => {
             ? `Server running at http://localhost:${port}/`
             : 'Server running at http://localhost'
     );
+});
+
+process.on('SIGINT', () => {
+    if (forcedExit) { 
+        console.log('Force exiting server...');
+        process.exit(0);
+    }
+    console.log('Shutting down server...');
+    forcedExit = true;
+    server.close(() => {
+        console.log('Server stopped');
+        process.exit(0);
+    });
+});
+
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught exception in server:', err);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled rejection in server:', reason);
+    process.exit(1);
+});
+
+process.on('warning', (warning) => {
+    console.warn('Server Warning:', warning);
+});
+
+process.on('error', (err) => {
+    console.error('Server Error:', err);
+    process.exit(1);
 });
