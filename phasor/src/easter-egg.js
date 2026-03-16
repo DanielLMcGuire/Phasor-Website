@@ -16,17 +16,21 @@ function logoFall() {
 }
 
 function logoSpin() {
+    if (logo.style.display === "none") {
+        console.error("Logo has fallen!");
+        return;
+    }
     logo.classList.remove("spin");
     void logo.offsetWidth; // Reset
     logo.classList.add("spin");
 }
 
 function logoKill() {
-    logo.style.display = "none";
+    if (logo.style.display !== "none") logo.style.display = "none";
 }
 
 function logoReset() {
-    if (logo.style.display !== "none") logoKill();
+    logoKill();
     logo.style.display = "";
     logo.classList.remove("fall");
     logo.classList.remove("spin");
