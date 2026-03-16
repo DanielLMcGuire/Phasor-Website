@@ -1,4 +1,8 @@
-dist
-scripts
-node_modules
+dist/
+node_modules/
 package-lock.json
+phasor/themes/phasor.min.css
+phasor-docs/scripts/man.js
+phasor-docs/scripts/man.min.js
+phasor-docs/scripts/man.js.map
+phasor-docs/scripts/man.min.js.map
