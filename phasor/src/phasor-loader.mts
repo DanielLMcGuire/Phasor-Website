@@ -107,6 +107,7 @@ export async function loadMD(url: string, targetSelector: string): Promise<void>
 
 /**
  * Loads markdown based on a URL query parameter with a fallback path.
+ * Safe, will not accept 
  */
 export function loadMDfromQuery_s(
     targetSelector: string,
@@ -114,17 +115,29 @@ export function loadMDfromQuery_s(
     defaultPath = '/content/404.md'
 ): void {
     const params = new URLSearchParams(window.location.search);
-    let filePath = params.get(param) || defaultPath;
+    let path = params.get(param) || defaultPath;
 
-    if (!filePath.match(/^(\/|\.\/|\.\.\/|[^\/].*)/)) {
-        filePath = defaultPath;
-    }
+    if (!path.startsWith('/') || path.includes('..'))
+        path = defaultPath;
 
-    loadMD(filePath, targetSelector);
+    const filePath = encodeURI(path);
+
+    fetch(filePath, { method: 'HEAD' })
+        .then(response => {
+            if (response.ok)
+                loadMD(filePath, targetSelector);
+            else
+                loadMD(defaultPath, targetSelector);
+        })
+        .catch(() => {
+            loadMD(defaultPath, targetSelector);
+        });
 }
 
 /**
  * Loads markdown based on a URL query parameter with a fallback path.
+ * 
+ * CAN CAUSE XSS ATTACKS!
  */
 export function loadMDfromQuery(
     targetSelector: string,

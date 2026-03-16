@@ -18,4 +18,9 @@ if (nameParam) {
     if (docTitle) docTitle.innerHTML = "?file=&lt;path-to-relative-file&gt;(&name=&lt;page-name&gt;)";
 }
 
-loadMDfromQuery("#main_md", "file");
+// Prevent XSS attack
+if (fileParam.startsWith("https://phasor-docs.pages.dev")) {
+    loadMDfromQuery("#main_md", "file");
+} else {
+    loadMDfromQuery_s("#main_md", "file", "/content/404.md")
+}
