@@ -22,5 +22,6 @@
     "docker": { "label": "Docker", "type": "gzip archive" },
     "dockerzip": { "label": "Docker", "type": "zip archive" },
     "vscode": { "label": "VSCode Extension", "type": "'VSIX' zip archive" },
-    "vs": { "label": "VS Extension", "type": "'VSIX' zip archive" }
+    "vs": { "label": "VS Extension", "type": "'VSIX' zip archive" },
+    "python": { "label": "Python Package", "type": "'WHL' Python Wheel Package"}
 }
