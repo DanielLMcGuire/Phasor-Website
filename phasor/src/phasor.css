@@ -385,10 +385,9 @@ footer {
 }
 
 .spin {
-    animation: spin 1.24s linear;
+    animation: spin 1.24s cubic-bezier(0.4, 0, 1, 1);
 }
 
 .fall {
-    animation: fall 0.8s ease-in forwards;
+    animation: fall 0.8s cubic-bezier(0.47, 0, 0.75, 0.72) forwards;
 }
-
