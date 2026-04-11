@@ -106,24 +106,34 @@ async function fetchMD(url: string): Promise<string> {
 export async function loadMD(url: string, targetSelector: string): Promise<void> {
     const t0 = performance.now();
     try {
-        const md = await fetchMD(url);
+        const htmlCached = getHTML(url);
+        let html: string;
+
         await prismReady();
+        
+        if (htmlCached) {
+            html = htmlCached;
+        } else {
+            const md = await fetchMD(url);
 
-        marked.setOptions({
-            highlight(code: string, lang: string) {
-                const Prism = (window as any).Prism;
-                return Prism?.languages[lang]
-                    ? Prism.highlight(code, Prism.languages[lang], lang)
-                    : code;
-            }
-        });
+            marked.setOptions({
+                highlight(code: string, lang: string) {
+                    const Prism = (window as any).Prism;
+                    return Prism?.languages[lang]
+                        ? Prism.highlight(code, Prism.languages[lang], lang)
+                        : code;
+                }
+            });
 
-        const tParse = performance.now();
-        let html = marked.parse(md);
-        track("Parse Markdown", tParse, performance.now(), "Parsing", "secondary");
+            const tParse = performance.now();
+            html = marked.parse(md);
+            track("Parse Markdown", tParse, performance.now(), "Parsing", "secondary");
 
-        const images = extractImageURLsFromHTML(html);
-        preloadImages(images);
+            const images = extractImageURLsFromHTML(html);
+            preloadImages(images);
+
+            setHTML(url, html);
+        }
 
         const tReplace = performance.now();
         html = await replaceImagesInHTML(html);
@@ -306,6 +316,9 @@ async function fetchHTML(url: string): Promise<string> {
     const text = await res.text();
     track(`Fetch HTML: ${url}`, t0, performance.now(), "Network", "primary");
 
+    const images = extractImageURLsFromHTML(text);
+    preloadImages(images);
+
     setHTML(url, text);
     return text;
 }
@@ -316,13 +329,7 @@ async function fetchHTML(url: string): Promise<string> {
 export async function loadHTML(url: string, targetSelector: string): Promise<void> {
     const t0 = performance.now();
     try {
-        const wasCached = htmlExists(url);
         const html = await fetchHTML(url);
-
-        if (!wasCached) {
-            const images = extractImageURLsFromHTML(html);
-            preloadImages(images);
-        }
 
         const target = document.querySelector<HTMLElement>(targetSelector);
         if (!target) throw new Error(`Target element not found: ${targetSelector}`);
@@ -380,22 +387,40 @@ function extractImageURLsFromHTML(html: string): string[] {
 }
 
 /**
- * Reads cached image data URL from localStorage.
+ * How long (ms) a cached image data URL is considered fresh.
+ */
+const IMAGE_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+interface StoredImageEntry {
+    dataUrl: string;
+    expires: number;
+}
+
+/**
+ * Reads cached image data URL from localStorage, returning null if missing or expired.
  */
 function getStoredImage(url: string): string | null {
     try {
-        return localStorage.getItem(`img:${url}`);
+        const raw = localStorage.getItem(`img:${url}`);
+        if (!raw) return null;
+        const entry: StoredImageEntry = JSON.parse(raw);
+        if (Date.now() > entry.expires) {
+            localStorage.removeItem(`img:${url}`);
+            return null;
+        }
+        return entry.dataUrl;
     } catch {
         return null;
     }
 }
 
 /**
- * Stores image data URL in localStorage.
+ * Stores image data URL in localStorage with a 1-hour expiry.
  */
 function setStoredImage(url: string, dataUrl: string): void {
     try {
-        localStorage.setItem(`img:${url}`, dataUrl);
+        const entry: StoredImageEntry = { dataUrl, expires: Date.now() + IMAGE_TTL_MS };
+        localStorage.setItem(`img:${url}`, JSON.stringify(entry));
     } catch {
         console.error("Issue storing image data!");
         console.log(`See ${helpSite}`);
