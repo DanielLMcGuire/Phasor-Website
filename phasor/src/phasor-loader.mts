@@ -2,6 +2,25 @@ import { marked } from "./third-party/marked/lib/marked.esm.js";
 
 const helpSite = "https://phasor.pages.dev/document.html?file=https%3A%2F%2Fphasor-docs.pages.dev%2Fcontent%2Fphasor-website-internals.md";
 
+type DevToolsColor =
+    | "primary" | "primary-light" | "primary-dark"
+    | "secondary" | "secondary-light" | "secondary-dark"
+    | "tertiary" | "tertiary-light" | "tertiary-dark"
+    | "error";
+
+/**
+ * Emits a custom entry into the Performance panel under the "Phasor" group.
+ */
+function track(
+    label: string,
+    start: number,
+    end: number,
+    trackName: string,
+    color: DevToolsColor = "primary"
+): void {
+    console.timeStamp(label, start, end, trackName, "Phasor Loader", color);
+}
+
 /**
  * Loads Prism.js and resolves when syntax highlighting is ready.
  * Safe to call multiple times.
@@ -12,9 +31,12 @@ const prismReady = (() => {
         if (promise) return promise;
         if ((window as any).Prism) return Promise.resolve();
         promise = new Promise((resolve, reject) => {
+            const t0 = performance.now();
             const s = document.createElement("script");
             s.src = "/scripts/prism.js";
-            s.onload = () => resolve();
+            s.onload = () => {
+                resolve();
+            };
             s.onerror = () => reject(new Error("Failed to load Prism.js"));
             document.head.appendChild(s);
         });
@@ -66,9 +88,13 @@ export function mdExists(url: string): boolean {
 async function fetchMD(url: string): Promise<string> {
     const cached = getMD(url);
     if (cached) return cached;
+
+    const t0 = performance.now();
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Failed to load ${url}: ${res.status}`);
     const text = await res.text();
+    track(`Load Markdown: ${url}`, t0, performance.now(), "Network", "primary");
+
     setMD(url, text);
     return text;
 }
@@ -78,6 +104,7 @@ async function fetchMD(url: string): Promise<string> {
  * applies syntax highlighting and preloads referenced images.
  */
 export async function loadMD(url: string, targetSelector: string): Promise<void> {
+    const t0 = performance.now();
     try {
         const md = await fetchMD(url);
         await prismReady();
@@ -91,14 +118,22 @@ export async function loadMD(url: string, targetSelector: string): Promise<void>
             }
         });
 
+        const tParse = performance.now();
         let html = marked.parse(md);
+        track("Parse Markdown", tParse, performance.now(), "Parsing", "secondary");
+
         const images = extractImageURLsFromHTML(html);
         preloadImages(images);
+
+        const tReplace = performance.now();
         html = await replaceImagesInHTML(html);
+        track("Image Caching", tReplace, performance.now(), "Images", "tertiary");
 
         const target = document.querySelector<HTMLElement>(targetSelector);
         if (!target) throw new Error(`Target element not found: ${targetSelector}`);
         target.innerHTML = html;
+
+        track(`loadMD: ${url}`, t0, performance.now(), "Lifecycle", "primary-dark");
     } catch (err) {
         console.error(err);
         console.log(`See ${helpSite}`);
@@ -154,6 +189,7 @@ export function loadMDfromQuery(
  * Renders a raw markdown string directly into a target element.
  */
 export async function loadMDString(mdString: string, targetSelector: string): Promise<void> {
+    const t0 = performance.now();
     try {
         await prismReady();
         marked.setOptions({
@@ -165,14 +201,22 @@ export async function loadMDString(mdString: string, targetSelector: string): Pr
             }
         });
 
+        const tParse = performance.now();
         let html = marked.parse(mdString);
+        track("Markdown Parse (string)", tParse, performance.now(), "Parsing", "secondary");
+
         const images = extractImageURLsFromHTML(html);
         preloadImages(images);
+
+        const tReplace = performance.now();
         html = await replaceImagesInHTML(html);
+        track("Image Replacement (string)", tReplace, performance.now(), "Images", "tertiary");
 
         const target = document.querySelector<HTMLElement>(targetSelector);
         if (!target) throw new Error(`Target element not found: ${targetSelector}`);
         target.innerHTML = html;
+
+        track("Load Markdown (string)", t0, performance.now(), "Lifecycle", "primary-dark");
     } catch (err) {
         console.error(err);
         console.log(`See ${helpSite}`);
@@ -183,27 +227,30 @@ export async function loadMDString(mdString: string, targetSelector: string): Pr
  * Preloads markdown files and their images efficiently.
  */
 export async function preloadMD(urls: string[]): Promise<void> {
+    const t0 = performance.now();
     await Promise.all(urls.map(async (url) => {
+        const tUrl = performance.now();
         try {
-            // Fetch markdown (from cache or network)
             const md = await fetchMD(url);
 
-            // Check if HTML version already cached to skip parsing
             const htmlCached = getHTML(url);
-            const html = htmlCached ?? marked.parse(md);
 
-            // Preload images
+            const tParse = performance.now();
+            const html = htmlCached ?? marked.parse(md);
+            if (!htmlCached) track(`Parse Markdown: ${url}`, tParse, performance.now(), "Parsing", "secondary-light");
+
             const images = extractImageURLsFromHTML(html);
             preloadImages(images);
 
-            // Cache HTML if not already cached
             if (!htmlCached) setHTML(url, html);
 
+            track(`Preload Markdown: ${url}`, tUrl, performance.now(), "Lifecycle", "primary-light");
         } catch (err) {
             console.warn(`Failed to preload MD: ${url}`, err);
             console.log(`See ${helpSite}`);
         }
     }));
+    track(`preloadMD (${urls.length} files)`, t0, performance.now(), "Lifecycle", "primary-dark");
 }
 
 /**
@@ -253,9 +300,12 @@ async function fetchHTML(url: string): Promise<string> {
     const cached = getHTML(url);
     if (cached) return cached;
 
+    const t0 = performance.now();
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Failed to load ${url}: ${res.status}`);
     const text = await res.text();
+    track(`Fetch HTML: ${url}`, t0, performance.now(), "Network", "primary");
+
     setHTML(url, text);
     return text;
 }
@@ -264,9 +314,11 @@ async function fetchHTML(url: string): Promise<string> {
  * Loads an HTML file into a target element and preloads its images.
  */
 export async function loadHTML(url: string, targetSelector: string): Promise<void> {
+    const t0 = performance.now();
     try {
         const wasCached = htmlExists(url);
         const html = await fetchHTML(url);
+
         if (!wasCached) {
             const images = extractImageURLsFromHTML(html);
             preloadImages(images);
@@ -276,7 +328,11 @@ export async function loadHTML(url: string, targetSelector: string): Promise<voi
         if (!target) throw new Error(`Target element not found: ${targetSelector}`);
         target.innerHTML = html;
 
+        const tReplace = performance.now();
         await replaceImagesWithCache(target);
+        track("Image Replacement (HTML)", tReplace, performance.now(), "Images", "tertiary");
+
+        track(`Load HTML: ${url}`, t0, performance.now(), "Lifecycle", "primary-dark");
     } catch (err) {
         console.error(err);
         console.log(`See ${helpSite}`);
@@ -287,19 +343,20 @@ export async function loadHTML(url: string, targetSelector: string): Promise<voi
  * Preloads HTML files and their images efficiently.
  */
 export async function preloadHTML(urls: string[]): Promise<void> {
+    const t0 = performance.now();
     await Promise.all(urls.map(async (url) => {
+        const tUrl = performance.now();
         try {
-            // Fetch HTML (from cache or network)
             const html = await fetchHTML(url);
-
-            // Preload images
             const images = extractImageURLsFromHTML(html);
             preloadImages(images);
+            track(`Preload HTML: ${url}`, tUrl, performance.now(), "Lifecycle", "primary-light");
         } catch (err) {
             console.warn(`Failed to preload HTML: ${url}`, err);
             console.log(`See ${helpSite}`);
         }
     }));
+    track(`preloadHTML (${urls.length} files)`, t0, performance.now(), "Lifecycle", "primary-dark");
 }
 
 /**
@@ -345,7 +402,6 @@ function setStoredImage(url: string, dataUrl: string): void {
     }
 }
 
-
 /**
  * Preloads images and stores them in cache.
  */
@@ -364,9 +420,14 @@ function preloadImages(urls: string[]): void {
                 continue;
             }
 
+            const fetchStart = performance.now();
             const promise = fetch(url)
-                .then(r => r.blob())
+                .then(r => {
+                    track(`Fetch image: ${url}`, fetchStart, performance.now(), "Images", "tertiary-light");
+                    return r.blob();
+                })
                 .then(blob => new Promise<HTMLImageElement>((resolve) => {
+                    const tDecode = performance.now();
                     const reader = new FileReader();
                     reader.onload = () => {
                         const dataUrl = reader.result as string;
@@ -375,6 +436,7 @@ function preloadImages(urls: string[]): void {
                         imageCache.set(url, img);
                         setStoredImage(url, dataUrl);
                         imagePending.delete(url);
+                        track(`Decode image: ${url}`, tDecode, performance.now(), "Images", "tertiary-dark");
                         resolve(img);
                     };
                     reader.readAsDataURL(blob);
