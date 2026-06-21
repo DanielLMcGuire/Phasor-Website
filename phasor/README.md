@@ -6,23 +6,18 @@ Official website for the Phasor programming language.
 
 ```
 Website/
-├── src/                    # TypeScript source files
+├── src/
 │   ├── phasor-loader.ts    # Content loading utilities (Markdown/HTML)
 │   ├── phasor-page.ts      # Page initialization and template loading
 │   ├── phasor-downloads.ts # Download page generation
 │   └── phasor-theme.ts     # Theme toggle (light/dark mode)
-├── scripts/                # Compiled and minified JavaScript output, prism.js for highlighting
+├── scripts/                # Compiled and minified JavaScript output, prism.js for highlighting, sourcemaps
 ├── content/                # Static content
-│   ├── docs/               # Documentation guides
 │   ├── legal/              # License and policy documents
-|   ├── site/               # Shared HTML Elements
-│   └── std/                # Standard library specifications
+|   └── site/               # Shared HTML Elements
 ├── themes/                 # CSS stylesheets
 ├── downloads/              # Release metadata and binaries
-├── assets/                 # Favicons and branding
-├── build.mjs               # Build script (TypeScript → JavaScript)
-├── server.mjs              # Development server (NOT used in production)
-└── package.json            # Dependencies and scripts
+└── assets/                 # Favicons and branding
 ```
 
 ## TypeScript Modules
