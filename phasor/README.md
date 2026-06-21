@@ -2,10 +2,6 @@
 
 Official website for the Phasor scripting language, built with TypeScript and a custom build system.
 
-## Overview
-
-Phasor uses a custom static website generator that compiles TypeScript modules into minified JavaScript, serving documentation, downloads, and language information for Phasor. The site uses a modular architecture with reusable components for content loading, theming, and page management.
-
 ## Project Structure
 
 ```
@@ -120,8 +116,6 @@ npm run build        # Development build
 npm run build:prod   # Production build
 ```
 
-## Production Deployment
-
 The website is deployed as static files. Only the following directories are needed:
 
 - `scripts/` - Compiled JavaScript (minified)
@@ -131,12 +125,6 @@ The website is deployed as static files. Only the following directories are need
 - `downloads/` - Release metadata
 - `*.html` - HTML pages (index.html, docs.html, etc.)
 
-**Do NOT deploy:**
-- `src/` - TypeScript source (already compiled)
-- `server.mjs` - Development server only
-- `build.mjs` - Build script only
-- `node_modules/` - Dependencies
-
 ## Content Management
 
 ### Adding Documentation
@@ -145,14 +133,7 @@ The website is deployed as static files. Only the following directories are need
 3. Use `loadMD()` to render on page load
 
 ### Adding Downloads
-1. Update `/downloads/index.json` with release metadata
-2. Include platform-specific file paths
-3. Download page auto-generates from JSON
-
-### Modifying Templates
-1. Edit HTML in `templates/`
-2. Rebuild with `npm run build:prod`
-3. Templates are cached in sessionStorage
+Use the python script.
 
 ## Styling
 
@@ -171,21 +152,3 @@ Theme switching uses CSS custom properties (variables) controlled by `data-theme
 **Build-time:**
 - `typescript` - TypeScript compiler
 - `terser` - JavaScript minifier
-
-## Performance Optimizations
-
-- **Minification** - All JavaScript minified in production
-- **Caching** - Content cached in sessionStorage to reduce requests
-- **Preloading** - Critical content preloaded before display
-- **Image Preloading** - Images extracted from content and preloaded
-- **Source Maps** - Available in development for debugging
-
-## Browser Support
-
-- Modern browsers with ES2020 support
-- Requires JavaScript enabled
-- Graceful fallback for missing content
-
-## License
-
-See `content/legal/` for license information.
