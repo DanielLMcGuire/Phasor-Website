@@ -1,6 +1,6 @@
 # Phasor Website
 
-Official website for the Phasor scripting language, built with TypeScript and a custom build system.
+Official website for the Phasor programming language.
 
 ## Project Structure
 
