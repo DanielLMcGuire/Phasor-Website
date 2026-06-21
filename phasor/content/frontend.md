@@ -1,10 +1,23 @@
-[![Release](https://img.shields.io/github/v/release/DanielLMcGuire/Phasor.svg?style=flat-square)](https://phasor.pages.dev/downloads?version=latest)
-[![AUR Version](https://img.shields.io/aur/version/phasor.svg?style=flat-square)](https://aur.archlinux.org/packages/phasor)
-![GitHub branch check runs](https://img.shields.io/github/check-runs/DanielLMcGuire/Phasor/master.svg?style=flat-square)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/w/DanielLMcGuire/Phasor.svg?label=commits&style=flat-square)
+[![Release](https://img.shields.io/github/v/release/DanielLMcGuire/Phasor.svg)](https://phasor.pages.dev/downloads?version=latest)
+[![AUR Version](https://img.shields.io/aur/version/phasor.svg)](https://aur.archlinux.org/packages/phasor)
+![GitHub branch check runs](https://img.shields.io/github/check-runs/DanielLMcGuire/Phasor/master.svg)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/w/DanielLMcGuire/Phasor.svg?label=commits)
+
+A dynamically typed compiled language with a bytecode VM. User defined functions use static parameter and return types, while the runtime remains dynamically typed.
+
+Phasor does not use a traditional garbage collector. It relies on a unified type system with RAII style resource management across the runtime, standard library, and FFI. Memory is deterministic and cleaned up at shutdown or when explicitly nulled.
+
+Phasor isbeta, with an expanding ABI and a focus on long-term stability and long-term usability.
+
+[Download Latest Stable](https://github.com/DanielLMcGuire/Phasor/releases/latest)
+[Download Latest Nightly](https://github.com/DanielLMcGuire/Phasor/actions/workflows/nightly.yml?query=is%3Asuccess+branch%3Amaster)
 
 ```bash
-$ nix run github:DanielLMcGuire/Phasor
+# Run via nix
+nix run github:DanielLMcGuire/Phasor [-- -- OPTIONS]
+
+# Installed
+phasor [OPTIONS]
 ```
 
 ```javascript
@@ -12,73 +25,50 @@ using("stdio");
 puts("Hello, World!");
 ```
 
----
+## Language Features
 
-## Features
-
-- **Dynamic typing** — integers, floats (IEEE 754 double-precision), strings, booleans, and null
-- **Type annotations** in function declarations: `fn greet(name: string) -> void { ... }`
-- **Control flow** — if/else, while, for, switch/case, break/continue
-- **Standard library** via `using("featureName")`
-- **Plugin/FFI API** — extend Phasor with native C code
-- **C format specifier support** — familiar `printf`-style formatting
-- **Windows and POSIX API bindings** built in
-
----
+* Dynamic typing: int, float (IEEE 754), string, bool, null
+* Structs, arrays, and uniform function call syntax
+* Type annotated functions with enforced signatures
+* Control flow: if, else, loops, switch, break, continue
+* Standard library via `using("module")`
+* Plugin and FFI support for native extensions
+* C style formatting support for printf style output
+* Built in Windows and POSIX bindings
+* stdmem module for explicit free or null based cleanup
 
 ## Toolchain
 
-| Tool | Description |
-|---|---|
-| `phasor` | All-in-one: Script runner, REPL, pipe-in, and shebang support |
-| `phasorvm` | Execute compiled bytecode |
-| `phasorcompiler` | Compile scripts to bytecode |
-| `phasornative` | Compile scripts and wrap to native binary |
-| `phasorrepl` | Interactive REPL |
-| `phasor-lsp` | JSON-RPC 2.0 language server for editor integration |
-
----
+| Tool           | Purpose                       |
+| -------------- | ----------------------------- |
+| phasor         | Runner, REPL, scripting entry |
+| phasorvm       | Bytecode execution            |
+| phasorcompiler | Script to bytecode            |
+| phasornative   | Native build wrapper          |
+| phasorrepl     | Interactive shell             |
+| phasor-lsp     | Language server (JSON RPC)    |
 
 ## Quick Start
 
 ```bash
-# Run a script
 phasor script.phs
-
-# Interactive REPL
 phasor
-
-# Compile to bytecode, then run
 phasorcompiler script.phs -o out.phsb
 phasorvm out.phsb
 ```
 
-### Example
+## Example
 
 ```javascript
 using("stdio", "stdtype");
 
 puts("Enter a number:");
-var input = gets();
-var num = to_int(input);
-var result = num + 25;
-
-putf("%d + 25 = %d\n", num, result);
+var input: string = gets();
+var num: int = to_int(input);
+putf("%d + 25 = %d\n", num, num + 25);
 ```
-
----
-
-## Documentation
-
-- [Language Guide](https://phasor.pages.dev/document?file=https%3A%2F%2Fphasor-docs.pages.dev%2Fcontent%2Fguide_phasor_language.md&name=Language%20Guide) — Syntax and language features
-- [VM Internals](https://phasor.pages.dev/document?file=https%3A%2F%2Fphasor-docs.pages.dev%2Fcontent%2Fguide_vm_internals.md&name=VM%20Internals) — Virtual machine architecture
-- [Doxygen Reference](https://phasor-docs.pages.dev) — Generated source documentation and call graphs
-- [Man Pages](https://phasor-docs.pages.dev/man?f=Phasor.3) — `phasorvm`, `phasorjit`, `phasorcompiler`, and more
-
----
 
 ## License
 
-- Phasor Language / ISA / VM / Toolchain / Standard Library — [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)
-- Phasor Shell — [MIT](https://opensource.org/license/mit)
-- Phasor Core Utils — [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
+* Toolchain: Apache 2.0
+* Runtime: Apache 2.0 with LLVM Exceptions
